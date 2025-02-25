@@ -1,5 +1,5 @@
-class Inyeccion {
-#peaks=[];
+class Inyection {
+#chromatograms=[];;
 #id;
 #date
 #hour;
@@ -18,11 +18,11 @@ this.#id=nInyeccion;
 }
 
 
-addPeak(peak){
-    this.#peaks.push(peak)
+addChromatogram(chromatogram){
+    this.#chromatograms.push(chromatogram)
 }
-getCompounds(){
-    return this.#peaks;
+getchromatograms(){
+    return this.#chromatograms;
 }
 
 getId(){
@@ -114,10 +114,4 @@ setSampleName(sampleName){
 getSampleName(){
     return this.#sampleName;
 }
-}
-
-class Peak{
-
-
-
 }
