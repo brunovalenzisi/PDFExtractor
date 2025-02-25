@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+#file-list {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+#file-list li {
+    background: #f4f4f4;
+    margin: 5px 0;
+    padding: 3px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.remove-btn {
+    background: red;
+    padding: 3px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#file-label {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+#file-label:hover {
+    background: #0056b3;
+}
+
+

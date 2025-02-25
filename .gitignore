@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Electron build outputs
+dist/
+out/
+
+# Logs
+*.log
+
+# Dependency directories
+bower_components/
+jspm_packages/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# Compiled files
+*.o
+*.obj
+*.lo
+*.la
+*.dll
+*.exe
+*.pdb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# NPM debug file
+npm-debug.log*
+
+# Package distribution files
+*.tgz
