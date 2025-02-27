@@ -1,19 +1,32 @@
-{ 
+{
   "name": "pdfextractor",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
+    "dist": "electron-builder --win portable",
     "start": "electron main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.PDFExtractor.id",
+    "productName": "PDFExtractor",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable"
+    }
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^34.2.0"
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
   },
   "dependencies": {
-    "pdf2json": "^3.1.5"
+    "pdf2json": "^3.1.5",
+    "xlsx": "^0.18.5"
   }
 }

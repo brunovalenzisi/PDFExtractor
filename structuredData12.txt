@@ -1,0 +1,31 @@
+TUTEUR S.A.C.I.F.I.A.
+Data File Name         : C:\Nuevos productos\Macitentan Tadafilo\SHI-E\Disolucion\Mes 0\Macitentan\DM4 MTP004B M0 Macitentan_026.lcdMethod File Name     : C:\Nuevos productos\Macitentan Tadafilo\SHI-E\Disolucion\Mes 0\Macitentan\Macitentan DSN.lcm
+Batch File Name        : C:\Nuevos productos\Macitentan Tadafilo\SHI-E\Disolucion\Mes 0\Macitentan\Macitentan_DSN_M0.lcbReport File Name      : C:\Nuevos productos\Macitentan Tadafilo\SHI-E\Disolucion\Mes 0\Macitentan\DSN Macitentan.lsr
+  Analista                    : DNA
+PDA Ch1 260nm
+Peak#
+ 1 
+Name
+ Macitentan 
+Ret. Time
+ 13,923 
+Area
+ 171163 
+Theoretical Plate
+ 158539 
+Tailing
+ 1,005 
+Resolution
+--
+ Data Acquired: 19/10/2021 08:20:10 p.m. Data Processed: 19/10/2021 02:38:16 p.m. Vial          : 40
+ Vol. Inyección: 20 μL
+DM4 MTP004B M0 Macitentan
+min
+mAU
+05101520
+0
+10
+20
+30
+ 1 
+----------------Page (0) Break----------------

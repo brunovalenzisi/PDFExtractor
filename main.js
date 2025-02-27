@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const PDFParser = require("pdf2json");
+const XLSX = require("xlsx");
 const fs = require("fs/promises");  // Usamos la versión promesa de fs
+let inyections=[];
+
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -42,7 +45,9 @@ ipcMain.handle("process-files", async (event, files) => {
         try {
           const rawText = await pdfParser.getRawTextContent();
           const structuredData = parseChromatogram(rawText);
-          await fs.writeFile(`./structuredData${index}.json`, JSON.stringify(structuredData, null, 2))
+          inyections.push(structuredData);
+          await fs.writeFile(`./structuredData${index}.txt`, rawText)
+          //await fs.writeFile(`./structuredData${index}.json`, JSON.stringify(structuredData, null, 2))
           resolve();
         } catch (error) {
           reject(error);
@@ -55,7 +60,42 @@ ipcMain.handle("process-files", async (event, files) => {
 
   // Esperamos que todos los archivos se procesen antes de continuar
   await Promise.all(writePromises);
+  await generarXcell(inyections,"Resultados.xlsx");
 });
+
+
+async function generarXcell(inyections,filename){
+  const peaksData = [];
+  
+  const inyectionsData = inyections.map(item => {
+    const { Peaks, ...generalData } = item;
+    return generalData;
+  });
+
+  inyections.forEach(item => {
+    const parentId = item["Sample Name"];
+    item.Peaks.forEach(peak => {
+      peaksData.push({
+        "Sample Name": parentId, // Identificador del cromatograma
+        ...peak
+      });
+    });
+  });
+
+  const wsChrom = XLSX.utils.json_to_sheet(inyectionsData);
+  const wsPeaks = XLSX.utils.json_to_sheet(peaksData);
+
+  const wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, wsChrom, "Cromatogramas");
+  XLSX.utils.book_append_sheet(wb, wsPeaks, "Picos");
+  
+  XLSX.writeFile(wb,filename);
+
+
+
+
+};
 
 function parseChromatogram(content) {
   const data = {
