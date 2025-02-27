@@ -46,7 +46,7 @@ ipcMain.handle("process-files", async (event, files) => {
           const rawText = await pdfParser.getRawTextContent();
           const structuredData = parseChromatogram(rawText);
           inyections.push(structuredData);
-          await fs.writeFile(`./structuredData${index}.txt`, rawText)
+          //await fs.writeFile(`./structuredData${index}.txt`, rawText)
           //await fs.writeFile(`./structuredData${index}.json`, JSON.stringify(structuredData, null, 2))
           resolve();
         } catch (error) {
