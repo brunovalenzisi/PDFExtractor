@@ -3,6 +3,7 @@ const fileList = document.getElementById("file-list");
 const processFilesButton = document.getElementById("process-files");
 let selectedFiles = []; // Para almacenar las rutas de los archivos seleccionados
 
+
 selectFilesButton.addEventListener("click", async () => {
     const filePaths = await window.electronAPI.selectFiles();
 
