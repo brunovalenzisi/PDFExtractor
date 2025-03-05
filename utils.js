@@ -1,3 +1,7 @@
+const{ parse, format }= require("date-fns");
+const{ es }= require("date-fns/locale");
+
+
 function estructurarPdfData(pdfData) {
     let blocks = [];
     let index=0;
@@ -64,11 +68,11 @@ function parseChromatogram(lines) {
       else if (line.includes("Batch File Name")) data["Batch File Name"] = line.match(/C:\\.*$/)[0] || "";
       else if (line.includes("Report File Name")) data["Report File Name"] = line.match(/C:\\.*$/)[0] || "";
       else if (line.includes("Analista")) data["Analista"] = line.split(":")[1]?.trim() || "";
-      else if (line.includes("Data Acquired")) data["Data Acquired"] = line.match(/\d{2}\/\d{2}\/\d{4}.*$/)?.[0]?.trim() || "";
-      else if (line.includes("Data Processed")) data["Data Processed"] = line.match(/\d{2}\/\d{2}\/\d{4}.*$/)?.[0]?.trim() || "";
+      else if (line.includes("Data Acquired")) data["Data Acquired"] = parseDate(line.match(/\d{2}\/\d{2}\/\d{4}.*$/)?.[0]?.trim()) || "";
+      else if (line.includes("Data Processed")) data["Data Processed"] =parseDate(line.match(/\d{2}\/\d{2}\/\d{4}.*$/)?.[0]?.trim())  || "";
       else if (line.includes("Vial")) data["Vial"] = line.split(":")[1]?.trim() || "";
       else if (line.includes("Vol. Inyección")) data["Vol. Inyección"] = line.split(":")[1]?.trim() || "";
-      else if (index > 0 && lines[index - 1].includes("min")) data["Sample Name"] = line.trim(); // Asume que el Sample Name está antes de "min"
+      else if (index > 0 && lines[index - 1].includes("Analista")) data["Sample Name"] = line.trim(); 
       else if (line.includes("Peak#")) isPeakSection = true; // Marca el inicio de los picos
       else if (isPeakSection && line.trim() !== "") {
         // Extraer datos de picos
@@ -91,6 +95,16 @@ function parseChromatogram(lines) {
     return data;
   }
 
+
+  function parseDate(rawDate){
+    if (rawDate){
+      let fecha = parse(rawDate, "dd/MM/yyyy hh:mm:ss a", new Date(), { locale: es });
+      return (fecha);
+      
+    }
+
+    
+  }
 
 
 
