@@ -7,8 +7,8 @@ let inyections = [];
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1240,
+    height: 800,
     webPreferences: {
       preload: __dirname + "/preload.js", // Cargar el preload
       contextIsolation: true,
@@ -47,7 +47,6 @@ ipcMain.handle("process-files", async (event, files) => {
           const lines = estructurarPdfData(pdfData);
 
           const structuredData = parseChromatogram(lines);
-          console.log(structuredData);
           inyections.push(structuredData);
           resolve();
         } catch (error) {
