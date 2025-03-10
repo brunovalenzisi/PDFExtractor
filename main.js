@@ -1,7 +1,13 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const PDFParser = require("pdf2json");
 const XLSX = require("xlsx");
-const { estructurarPdfData, parseChromatogram,groupByLot } = require("./utils.js");
+const {
+  estructurarPdfData,
+  parseChromatogram,
+  crearHojaPorPico,
+  crearHojaSecuencia,
+  crearHojaPorLote,
+} = require("./utils.js");
 const { compareAsc, format } = require("date-fns");
 let inyections = [];
 
@@ -63,26 +69,6 @@ ipcMain.handle("process-files", async (event, files) => {
 });
 
 // Función para ajustar automáticamente el ancho de las columnas
-function autoAdjustColumnWidth(ws) {
-  const range = XLSX.utils.decode_range(ws["!ref"]); // Obtiene el rango de celdas
-  const columns = range.e.c + 1; // Número total de columnas
-  const columnWidths = [];
-
-  // Recorre todas las celdas y calcula el ancho máximo por columna
-  for (let C = range.s.c; C <= range.e.c; C++) {
-    let maxLength = 0;
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
-      if (cell && cell.v) {
-        maxLength = Math.max(maxLength, cell.v.toString().length); // Compara el largo de las celdas
-      }
-    }
-    columnWidths.push({ wch: maxLength + 2 }); // +2 para dar un poco de espacio extra
-  }
-
-  // Asigna los anchos a las columnas
-  ws["!cols"] = columnWidths;
-}
 
 async function generarXcell(inyections, filename) {
   inyections = inyections.sort((a, b) =>
@@ -91,89 +77,16 @@ async function generarXcell(inyections, filename) {
 
   inyections.forEach((iny) => {
     iny["Data Acquired"] = format(iny["Data Acquired"], "yyyy-MM-dd HH:mm:ss");
-    iny["Data Processed"] = format(iny["Data Processed"], "yyyy-MM-dd HH:mm:ss");
+    iny["Data Processed"] = format(
+      iny["Data Processed"],
+      "yyyy-MM-dd HH:mm:ss"
+    );
   });
-
-
-  let inyectionsData = inyections.map((item) => {
-    const { Peaks, ...generalData } = item;
-    return generalData;
-  });
-
-
-
   const wb = XLSX.utils.book_new();
 
-  const wsChrom = XLSX.utils.json_to_sheet(inyectionsData);
- 
+  crearHojaSecuencia(inyections, wb);
+  crearHojaPorPico(inyections, wb);
+  crearHojaPorLote(inyections, wb);
 
-  // Ajusta el ancho de las columnas antes de agregar las hojas
-  autoAdjustColumnWidth(wsChrom);
-  
-
-  XLSX.utils.book_append_sheet(wb, wsChrom, "Secuencia");
- 
-  
-  // Agrupar todos los picos por el nombre del pico
-  const groupedPeaks = {};
-
-  inyections.forEach((item) => {
-    item.Peaks.forEach((peak) => {
-      const peakName = peak["Name"];
-      if (!groupedPeaks[peakName]) {
-        groupedPeaks[peakName] = [];
-      }
-      groupedPeaks[peakName].push({"Sample Name":item["Sample Name"],...peak});
-    });
-  });
-
-  // Crear una hoja por cada grupo de picos (por nombre de pico)
-  Object.keys(groupedPeaks).forEach((peakName) => {
-    const peakGroupData = groupedPeaks[peakName].map((peak) => ({
-      "Sample Name": peak["Sample Name"],
-      "Ret. Time": peak["Ret. Time"],
-      "Area": peak["Area"],
-      "Theoretical Plate": peak["Theoretical Plate"],
-      "Tailing": peak["Tailing"],
-      "Resolution": peak["Resolution"] || "--"
-    }));
-
-    const peakSheet = XLSX.utils.json_to_sheet(peakGroupData);
-    autoAdjustColumnWidth(peakSheet); 
-    XLSX.utils.book_append_sheet(wb, peakSheet, `${peakName}`);
-  });
-
-  let lotGroups=groupByLot(inyections);
-  Object.keys(lotGroups).forEach((key) => {
-    const sheetData = [];
-    const headers = ["Peaks"];
-    
-    // Agregar encabezados
-    sheetData.push(headers);
-    
-    lotGroups[key].forEach((entry) => {
-        if (entry.Peaks && entry.Peaks.length > 0) {
-            entry.Peaks.forEach((peak) => {
-                sheetData.push([JSON.stringify(peak)]);
-            });
-        } else {
-            sheetData.push(["No peaks"]);
-        }
-    });
-    
-    // Crear la hoja
-    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-    autoAdjustColumnWidth(worksheet);
-    XLSX.utils.book_append_sheet(wb, worksheet, key);
-});
-
-  
-  XLSX.writeFile(wb, filename); 
+  XLSX.writeFile(wb, filename);
 }
-
-
-
-
-
-
-
