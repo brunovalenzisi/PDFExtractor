@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const PDFParser = require("pdf2json");
 const XLSX = require("xlsx");
-const { estructurarPdfData, parseChromatogram } = require("./utils.js");
+const { estructurarPdfData, parseChromatogram,groupByLot } = require("./utils.js");
 const { compareAsc, format } = require("date-fns");
 let inyections = [];
 
@@ -113,7 +113,7 @@ async function generarXcell(inyections, filename) {
 
   XLSX.utils.book_append_sheet(wb, wsChrom, "Secuencia");
  
-
+  
   // Agrupar todos los picos por el nombre del pico
   const groupedPeaks = {};
 
@@ -139,14 +139,36 @@ async function generarXcell(inyections, filename) {
     }));
 
     const peakSheet = XLSX.utils.json_to_sheet(peakGroupData);
-    autoAdjustColumnWidth(peakSheet); // Ajustar el ancho de las columnas de cada hoja de pico
-
-    // Agregar la hoja de picos agrupados por nombre
+    autoAdjustColumnWidth(peakSheet); 
     XLSX.utils.book_append_sheet(wb, peakSheet, `${peakName}`);
   });
 
-  // Escribir el archivo Excel
-  XLSX.writeFile(wb, filename);
+  let lotGroups=groupByLot(inyections);
+  Object.keys(lotGroups).forEach((key) => {
+    const sheetData = [];
+    const headers = ["Peaks"];
+    
+    // Agregar encabezados
+    sheetData.push(headers);
+    
+    lotGroups[key].forEach((entry) => {
+        if (entry.Peaks && entry.Peaks.length > 0) {
+            entry.Peaks.forEach((peak) => {
+                sheetData.push([JSON.stringify(peak)]);
+            });
+        } else {
+            sheetData.push(["No peaks"]);
+        }
+    });
+    
+    // Crear la hoja
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+    autoAdjustColumnWidth(worksheet);
+    XLSX.utils.book_append_sheet(wb, worksheet, key);
+});
+
+  
+  XLSX.writeFile(wb, filename); 
 }
 
 

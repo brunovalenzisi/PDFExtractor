@@ -77,17 +77,23 @@ function parseChromatogram(lines) {
       else if (isPeakSection && line.trim() !== "") {
         // Extraer datos de picos
         const peakData = line.trim().split(/\s+/);
-        if (peakData.length >= 6) {
+        if (peakData.length >= 7) {
+          let name="";
+          let posName=peakData.length-6 
+          for(let i=0;i<posName;i++){
+            name+=peakData[1+i]
+          }
           peaks.push({
             "Peak#": peakData[0],
-            "Name": peakData[1],
-            "Ret. Time": peakData[2],
-            "Area": peakData[3],
-            "Theoretical Plate": peakData[4],
-            "Tailing": peakData[5],
-            "Resolution": peakData[6] || "--"
+            "Name": name,
+            "Ret. Time": peakData[1+posName],
+            "Area": peakData[2+posName],
+            "Theoretical Plate": peakData[3+posName],
+            "Tailing": peakData[4+posName],
+            "Resolution": peakData[5+posName] || "--"
           });
         }
+
       }
     });
   
@@ -107,8 +113,41 @@ function parseChromatogram(lines) {
   }
 
 
+  function groupByLot(inyections){
+let lots={};
+inyections.forEach((iny)=>{
+const nameParts=iny["Sample Name"].split(" ");
+let type=nameParts[0].replace(/\d+/g, '');
+let lot=nameParts[1];
 
-module.exports = { estructurarPdfData,parseChromatogram };
+
+if(nameParts[2]){
+  if(lots[type+"-"+nameParts[1]]){
+    lots[type+"-"+nameParts[1]].push(iny);
+  }
+  else{
+    lots[type+"-"+nameParts[1]]=[];
+    lots[type+"-"+nameParts[1]].push(iny);
+  }
+}
+else{
+if(lots[type]){
+  lots[type].push(iny);
+}else{
+  lots[type]=[];
+  lots[type].push(iny);
+}
+}
+
+
+
+})
+    return lots
+  }
+
+
+
+module.exports = { estructurarPdfData,parseChromatogram,groupByLot };
 
 
 
